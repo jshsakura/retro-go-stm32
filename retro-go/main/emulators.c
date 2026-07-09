@@ -168,9 +168,21 @@ bool emulator_build_file_object(const char *path, retro_emulator_file_t *file)
         return false;
 
     memset(file, 0, sizeof(retro_emulator_file_t));
-    strncpy(file->folder, path, strlen(path)-strlen(name)-1);
-    strncpy(file->name, name, strlen(name)-strlen(ext)-1);
-    strcpy(file->ext, ext);
+
+    size_t folder_len = strlen(path) - strlen(name) - 1;
+    if (folder_len >= sizeof(file->folder))
+        folder_len = sizeof(file->folder) - 1;
+    strncpy(file->folder, path, folder_len);
+    file->folder[folder_len] = 0;
+
+    size_t name_len = strlen(name) - strlen(ext) - 1;
+    if (name_len >= sizeof(file->name))
+        name_len = sizeof(file->name) - 1;
+    strncpy(file->name, name, name_len);
+    file->name[name_len] = 0;
+
+    strncpy(file->ext, ext, sizeof(file->ext) - 1);
+    file->ext[sizeof(file->ext) - 1] = 0;
 
     const char *dirname = odroid_sdcard_get_filename(file->folder);
 
