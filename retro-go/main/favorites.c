@@ -115,7 +115,17 @@ static void favorites_load()
 
 static void favorites_save()
 {
-    char *buffer = calloc(favorites_count, 128);
+    size_t required_size = 1; // null terminator
+
+    for (int i = 0; i < favorites_count; i++)
+    {
+        if (!favorites[i].removed)
+            required_size += strlen(favorites[i].path) + 1; // path + '\n'
+    }
+
+    char *buffer = calloc(1, required_size);
+    if (!buffer)
+        return;
 
     for (int i = 0; i < favorites_count; i++)
     {
