@@ -203,6 +203,14 @@ void odroid_system_panic_dialog(const char *reason);
 void odroid_system_panic(const char *reason, const char *file, const char *function) __attribute__((noreturn));
 void odroid_system_halt() __attribute__((noreturn));
 void odroid_system_set_pre_sleep_hook(sleep_pre_sleep_hook_t callback);
+/* "Idle power off" is one setting, so it must be one rule. It was written out
+ * twice — the launcher's home loop and the in-game overlay — and the clock app,
+ * added later with a loop of its own, never joined the contract at all: no
+ * timeout ever fired there, whatever the user set. Every loop that can idle asks
+ * this; each still chooses how to sleep (the overlay must save state first).
+ * False when the setting is 0, which is how the user turns it off. */
+bool odroid_idle_timeout_expired(uint32_t idle_seconds);
+
 void odroid_system_sleep();
 void odroid_system_sleep_ex(system_sleep_flags_t flags, sleep_pre_wakeup_callback_t pre_wakeup_callback);
 void odroid_system_switch_app(int app) __attribute__((noreturn));
