@@ -387,7 +387,15 @@ void gfx_latch_context(int force)
 {
 	if (!gfx_context.latched || force) { // Context is already saved + we haven't render the line using it
 		gfx_context.scroll_x = IO_VDC_REG[BXR].W;
-		gfx_context.scroll_y = IO_VDC_REG[BYR].W - PCE.ScrollYDiff;
+		/* Mid-frame BYR strips (Ys I&II village) need BYR-1 vs this core's
+		 * line counter or the last line of each strip hits a transparent
+		 * tile row. Skip when base scroll is 0: BYR=0 with -1 becomes -1 and
+		 * draw_tiles wraps to the BAT bottom row (dotted first line on Ys III
+		 * black screens after System Card). */
+		int sy = (int)IO_VDC_REG[BYR].W - PCE.ScrollYDiff;
+		if (sy > 0)
+			sy -= 1;
+		gfx_context.scroll_y = sy;
 		gfx_context.control = IO_VDC_REG[CR].W;
 		gfx_context.latched = 1;
 	}
@@ -395,7 +403,7 @@ void gfx_latch_context(int force)
 
 
 /*
-	Render lines into the buffer from min_line to max_line (inclusive)
+	Render lines into the buffer for y in [min_line, max_line).
 */
 static inline void
 render_lines(int min_line, int max_line)
@@ -407,10 +415,10 @@ render_lines(int min_line, int max_line)
 		return;
 	}
 
-	// We must fill the region with color 0 first
-	// memset(screen_buffer + (min_line * XBUF_WIDTH), PCE.Palette[0], XBUF_WIDTH * (max_line - min_line + 1));
+	/* Clear only the lines we draw. Inclusive clear of max_line used to wipe
+	 * the first line of the next raster strip before it was redrawn. */
 	size_t screen_width = gfx_screen_width();
-	for (int y = min_line; y <= max_line; y++) {
+	for (int y = min_line; y < max_line; y++) {
 		memset(screen_buffer + (y * XBUF_WIDTH), PCE.Palette[0], screen_width);
 	}
 
