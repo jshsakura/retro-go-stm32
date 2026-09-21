@@ -143,6 +143,15 @@ enum {
     ODROID_KEYMAP_MD_START,
 };
 
+enum {
+    ODROID_KEYMAP_GBA_A = 0,
+    ODROID_KEYMAP_GBA_B,
+    ODROID_KEYMAP_GBA_L,
+    ODROID_KEYMAP_GBA_R,
+    ODROID_KEYMAP_GBA_START,
+    ODROID_KEYMAP_GBA_SELECT,
+};
+
 bool        odroid_keymap_supported(void);
 int         odroid_keymap_action_count(void);
 const char *odroid_keymap_action_name(int action);
