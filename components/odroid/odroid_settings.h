@@ -163,3 +163,7 @@ bool        odroid_keymap_is_default(void);
 bool        odroid_keymap_pressed(const odroid_gamepad_state_t *pad, int action);
 const char *odroid_keymap_physical_name(uint8_t physical_key);
 uint8_t     odroid_keymap_physical_step(uint8_t physical_key, int direction);
+/* Returns the index of another action sharing this action's physical key
+ * (duplicate-mapping warning for the Controls dialog), or -1 if unique.
+ * OFF and unmapped entries never conflict. */
+int         odroid_keymap_conflict(int action);
