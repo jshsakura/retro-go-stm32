@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "rg_emulators.h"
+#include "odroid_input.h"
 
 typedef enum
 {
@@ -106,3 +107,49 @@ void odroid_settings_app_int32_set(const char *key, int32_t value);
 
 uint8_t odroid_settings_cpu_oc_level_get(void);
 void odroid_settings_cpu_oc_level_set(uint8_t oc);
+
+/* Per-emulator, user-editable controls.  The small mapping is stored in a
+ * separate SD file for each APPID, so adding controls does not grow the
+ * resident /CONFIG object (or reset unrelated preferences). */
+#define ODROID_KEYMAP_MAX_ACTIONS 8
+#define ODROID_KEYMAP_OFF         0xffu
+
+enum {
+    ODROID_KEYMAP_NES_A = 0,
+    ODROID_KEYMAP_NES_B,
+    ODROID_KEYMAP_NES_START,
+    ODROID_KEYMAP_NES_SELECT,
+};
+
+enum {
+    ODROID_KEYMAP_SNES_B = 0,
+    ODROID_KEYMAP_SNES_Y,
+    ODROID_KEYMAP_SNES_SELECT,
+    ODROID_KEYMAP_SNES_START,
+    ODROID_KEYMAP_SNES_A,
+    ODROID_KEYMAP_SNES_X,
+    ODROID_KEYMAP_SNES_L,
+    ODROID_KEYMAP_SNES_R,
+};
+
+enum {
+    ODROID_KEYMAP_MD_A = 0,
+    ODROID_KEYMAP_MD_B,
+    ODROID_KEYMAP_MD_C,
+    ODROID_KEYMAP_MD_X,
+    ODROID_KEYMAP_MD_Y,
+    ODROID_KEYMAP_MD_Z,
+    ODROID_KEYMAP_MD_MODE,
+    ODROID_KEYMAP_MD_START,
+};
+
+bool        odroid_keymap_supported(void);
+int         odroid_keymap_action_count(void);
+const char *odroid_keymap_action_name(int action);
+uint8_t     odroid_keymap_get(int action);
+void        odroid_keymap_set(int action, uint8_t physical_key);
+void        odroid_keymap_reset(void);
+bool        odroid_keymap_is_default(void);
+bool        odroid_keymap_pressed(const odroid_gamepad_state_t *pad, int action);
+const char *odroid_keymap_physical_name(uint8_t physical_key);
+uint8_t     odroid_keymap_physical_step(uint8_t physical_key, int direction);
