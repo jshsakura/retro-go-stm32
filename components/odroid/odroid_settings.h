@@ -149,6 +149,7 @@ const char *odroid_keymap_action_name(int action);
 uint8_t     odroid_keymap_get(int action);
 void        odroid_keymap_set(int action, uint8_t physical_key);
 void        odroid_keymap_reset(void);
+void        odroid_keymap_save(void);
 bool        odroid_keymap_is_default(void);
 bool        odroid_keymap_pressed(const odroid_gamepad_state_t *pad, int action);
 const char *odroid_keymap_physical_name(uint8_t physical_key);
